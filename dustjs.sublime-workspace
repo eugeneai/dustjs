@@ -1,0 +1,201 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"run",
+				"run_my"
+			],
+			[
+				"init",
+				"initialOffset"
+			],
+			[
+				"imgw",
+				"imgwidth"
+			],
+			[
+				"photo",
+				"photoIdx"
+			],
+			[
+				"an",
+				"animate"
+			],
+			[
+				"viewIm",
+				"viewImage"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/jpollak/src/dustjs/dist/dust-full-1.0.0.js",
+		"/Users/jpollak/src/dustjs/lib/dust.js",
+		"/Users/jpollak/src/dustjs/src/dust.pegjs",
+		"/Users/jpollak/bin/mysandbox",
+		"/Users/jpollak/Sites/PhotoBook/www/backbone-jqm/index.html",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/js/supersized.3.2.7.js",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/theme/supersized.shutter.js",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/theme/supersized.shutter.css",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/slideshow.js",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/controller.js",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/app.html",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/jquery.picasa.js",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/demo.html",
+		"/Users/jpollak/src/Margarita/src/PhotoBook/css/supersized.css",
+		"/Users/jpollak/Downloads/buildinternet-supersized-b81e0e4/slideshow/demo.html",
+		"/Users/jpollak/Downloads/ImageSwitchSample/SlideShow.htm",
+		"/Users/jpollak/Downloads/ImageSwitchSample/Ads.htm",
+		"/Users/jpollak/Library/Application Support/Sublime Text 2/Packages/User/JavaScript.sublime-settings",
+		"/Users/jpollak/src/Margarita/WebContent/team.jsp"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"#hire",
+			"Blog",
+			"Joshua",
+			"modTimestamp",
+			"assured",
+			"run_my",
+			"status",
+			"run_my",
+			"list_installed_sandboxes",
+			"display_current_sandbox",
+			"function display_current_sandbox {\n    current_sandbox=`cat $DB_PROPERTIES | grep -o \"msb_[0-9_]*\"`\n    if [ \"$current_sandbox\" != \"\" ]\n    then\n        $SANDBOXES_BASEDIR/$current_sandbox/status > /dev/null\n        if [ \"$?\" != \"0\" ]\n        then\n            status=\"not running\"\n        else\n            status=\"running\"\n        fi\n        echo \"Current Sandbox $current_sandbox is ${status}\"\n    else\n        echo \"No Sandbox Selected\"\n    fi\ndisplay_current_sandbox",
+			"resize",
+			"css",
+			"AppView",
+			"PhotoView",
+			"HomeView",
+			"ThumbnailView",
+			"margin-left",
+			"slide-list",
+			"slide_list",
+			"slide-list",
+			"_start",
+			"slides",
+			"lo"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"FooterView",
+			"PhotoView"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

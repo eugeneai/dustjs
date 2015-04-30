@@ -18,6 +18,19 @@ function getGlobal(){
 
 dust.cache = {};
 
+dust.reset = function(name) {
+    dust.cache = {};
+}
+
+dust.exists = function(name) {
+    var tmpl = dust.cache[name];
+    if (tmpl) {
+        return true;
+    } else {
+        return false; 
+    }
+}
+
 dust.register = function(name, tmpl) {
   if (!name) return;
   dust.cache[name] = tmpl;
