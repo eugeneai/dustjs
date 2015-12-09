@@ -24,7 +24,7 @@ section "section"
   { t.push(["bodies"]); return t }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-   sec_tag_start is defined as matching an opening brace followed by one of #?^<+@% plus identifier plus context plus param 
+   sec_tag_start is defined as matching an opening brace followed by one of #?^<+@% plus identifier plus context plus param
    followed by 0 or more white spaces
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 sec_tag_start
@@ -32,7 +32,7 @@ sec_tag_start
   { return [t, n, c, p] }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-   end_tag is defined as matching an opening brace followed by a slash plus 0 or more white spaces plus identifier followed 
+   end_tag is defined as matching an opening brace followed by a slash plus 0 or more white spaces plus identifier followed
    by 0 or more white spaces and ends with closing brace
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 end_tag "end tag"
@@ -50,8 +50,22 @@ context
   params is defined as matching white space followed by = and identfier or inline
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 params "params"
-  = p:(ws+ k:key "=" v:(number / identifier / inline) {return ["param", ["literal", k], v]})*
+  = p:(ws+ param )*
   { return ["params"].concat(p) }
+
+param "param"
+/*
+  = k:(rdfent / key) {return ["param", ["literal", k], true];}
+  / k:key "=" v:(number / rdfent / identifier / inline ) {return ["param", ["literal", k], v];}
+*/
+  = k:parkey v:parval {return ["param", ["literal", k], v];}
+
+parkey "parkey"
+  = k:(rdfent / key) {return k;}
+
+parval "parval"
+  = "=" v:(number / rdfent / identifier / inline ) {return v;}
+  / "" {return true;}
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
    bodies is defined as matching a opening brace followed by key and closing brace, plus body 0 or more times.
@@ -64,11 +78,11 @@ bodies "bodies"
    reference is defined as matching a opening brace followed by an identifier plus one or more filters and a closing brace
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 reference "reference"
-  = ld n:identifier f:filters rd
-  { return ["reference", n, f] }
+  = ld n:identifier p:params f:filters rd
+  { return ["reference", n, f, p] }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-  partial is defined as matching a opening brace followed by a > plus anything that matches with key or inline plus 
+  partial is defined as matching a opening brace followed by a > plus anything that matches with key or inline plus
   context followed by slash and closing brace
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 partial "partial"
@@ -79,7 +93,7 @@ partial "partial"
    filters is defined as matching a pipe character followed by anything that matches the key
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 filters "filters"
-  = f:("|" n:key {return n})*
+  = f:(ws* "|" ws* n:key ws* {return n})*
   { return ["filters"].concat(f) }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
@@ -96,6 +110,9 @@ identifier "identifier"
   = p:path     { var arr = ["path"].concat(p); arr.text = p[1].join('.'); return arr; }
   / k:key      { var arr = ["key", k]; arr.text = k; return arr; }
 
+rdfent "rdfent"
+  = r:(n:identifier ":" i:identifier {return {ns:n, name:i};}) {return ['rdfent', r];}
+
 number "number"
   = n:(frac / integer) { return ['literal', n]; }
 
@@ -106,11 +123,11 @@ integer "integer"
   = digits:[0-9]+ { return parseInt(digits.join(""), 10); }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-  path is defined as matching a key plus one or more characters of key preceded by a dot 
+  path is defined as matching a key plus one or more characters of key preceded by a dot
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 path "path"
   = k:key? d:(nestedKey / array)+ {
-    d = d[0]; 
+    d = d[0];
     if (k && d) {
       d.unshift(k);
       return [false, d];;
@@ -120,12 +137,12 @@ path "path"
   / "." { return [true, []] }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-   key is defined as a character matching a to z, upper or lower case, followed by 0 or more alphanumeric characters  
+   key is defined as a character matching a to z, upper or lower case, followed by 0 or more alphanumeric characters
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 key "key"
   = h:[a-zA-Z_$] t:[0-9a-zA-Z_$]*
   { return h + t.join('') }
-  
+
 nestedKey "nestedKey"
   = d:("." k:key {return k})+ a:(array)? { if (a) { return d.concat(a); } else { return d; } }
 
@@ -133,7 +150,7 @@ array "array"
   = i:("[" a:([0-9]+) "]" {return a.join('')}) nk: nestedKey? { if(nk) { nk.unshift(i); } else {nk = [i] } return nk; }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-   inline params is defined as matching two double quotes or double quotes plus literal followed by closing double quotes or  
+   inline params is defined as matching two double quotes or double quotes plus literal followed by closing double quotes or
    double quotes plus inline_part followed by the closing double quotes
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 inline "inline"
@@ -142,7 +159,7 @@ inline "inline"
   / '"' p:inline_part+ '"'  { return ["body"].concat(p) }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-  inline_part is defined as matching a special or reference or literal  
+  inline_part is defined as matching a special or reference or literal
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 inline_part
   = special / reference / l:literal { return ["buffer", l] }
@@ -168,7 +185,7 @@ comment "comment"
   { return ["comment", c.join('')] }
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
-   tag is defined as matching an opening brace plus any of #?^><+%:@/~% plus 0 or more whitespaces plus any character or characters that 
+   tag is defined as matching an opening brace plus any of #?^><+%:@/~% plus 0 or more whitespaces plus any character or characters that
    doesn't match rd or eol plus 0 or more whitespaces plus a closing brace
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 tag
@@ -181,7 +198,7 @@ ld
 rd
   = "}"
 
-eol 
+eol
   = "\n"        //line feed
   / "\r\n"      //carriage + line feed
   / "\r"        //carriage return
