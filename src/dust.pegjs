@@ -50,8 +50,8 @@ context
   params is defined as matching white space followed by = and identfier or inline
 ---------------------------------------------------------------------------------------------------------------------------------------*/
 params "params"
-  = p:(ws+ param )*
-  { return ["params"].concat(p) }
+  = p:(ws+ a:param {return a;} )*
+  { return ["params"].concat(p); }
 
 param "param"
 /*
@@ -65,7 +65,7 @@ parkey "parkey"
 
 parval "parval"
   = "=" v:(number / rdfent / identifier / inline ) {return v;}
-  / "" {return true;}
+  / "" {return ["key", true, {text:true}];}
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
    bodies is defined as matching a opening brace followed by key and closing brace, plus body 0 or more times.
