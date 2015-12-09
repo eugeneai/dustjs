@@ -5,6 +5,18 @@ test:
 	node test/server.js
 
 #
+# Run jasmine-test
+#
+jasmine:
+	node test/jasmine-test/server/specRunner.js
+
+#
+# Run code coverage and generate report
+#
+coverage:
+	cover run test/server.js && cover report && cover report html
+
+#
 # Run the benchmarks
 #
 bench:
@@ -50,11 +62,13 @@ dust:
 	@@mkdir -p dist
 	@@touch ${CORE}
 	@@echo "$$HEADER" > ${CORE}
-	@@cat ${SRC}/dust.js >> ${CORE}
+	@@cat ${SRC}/dust.js\
+	      ${SRC}/dust-helpers.js >> ${CORE}
 	@@echo ${CORE} built
 	@@touch ${FULL}
 	@@echo "$$HEADER" > ${FULL}
 	@@cat ${SRC}/dust.js\
+	      ${SRC}/dust-helpers.js\
 	      ${SRC}/compiler.js\
 	      ${SRC}/parser.js >> ${FULL}
 	@@echo ${FULL} built

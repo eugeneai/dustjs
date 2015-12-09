@@ -3,7 +3,7 @@
 exports.coreSetup = function(suite, auto) {
   auto.forEach(function(test) {
     suite.test(test.name, function(){
-      testRender(this, test.source, test.context, test.expected);
+      testRender(this, test.source, test.context, test.expected, test.error || {});
     });
   });
 
@@ -63,21 +63,37 @@ exports.coreSetup = function(suite, auto) {
       unit.fail(err);
     });
   });
-}
 
-function testRender(unit, source, context, expected) {
-  var name = unit.id;
-  dust.loadSource(dust.compile(source, name));
-  dust.render(name, context, function(err, output) {
-    try {
-      unit.ifError(err);
-      unit.equals(output, expected);
-    } catch(err) {
-      unit.fail(err);
-      return;
-    }
-    unit.pass();
+  suite.test("renderSource (pipe)", function() {
+    var unit = this;
+    dust.renderSource('Hello World', {}).pipe({
+      write: function (data) {
+        try {
+          unit.equals('Hello World', data);
+        } catch(err) {
+          unit.fail(err);
+          return;
+        }
+      },
+      end: function () {
+        unit.pass();
+      }
+    })
   });
 }
+
+function testRender(unit, source, context, expected, error) {
+  var name = unit.id;
+   try {
+     dust.loadSource(dust.compile(source, name));
+     dust.render(name, context, function(err, output) {
+       unit.ifError(err);
+       unit.equals(output, expected);
+     });
+    } catch(err) {
+      unit.equals(err.message, error);
+    }
+    unit.pass();
+};
 
 })(typeof exports !== "undefined" ? exports : window);

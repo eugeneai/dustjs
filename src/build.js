@@ -1,13 +1,19 @@
-var PEG  = require('pegjs'),
+var peg  = require('pegjs'),
     fs   = require('fs'),
     path = require('path'),
     root = path.join(path.dirname(__filename), "..");
 
-var parser_src = PEG.buildParser(
-    fs.readFileSync(path.join(root, 'src', 'dust.pegjs'), 'utf8'), {output:"source"});
+var options = {
+    cache: false,
+    trackLineAndColumn: true
+};
 
-fs.writeFileSync(path.join(root, 'lib', 'parser.js'), "(function(dust){\n\nvar parser = "
-  + parser_src + ";\n\n"
-  + "dust.parse = parser.parse;\n\n"
-  + "})(typeof exports !== 'undefined' ? exports : window.dust);"
+var parser = peg.buildParser(fs.readFileSync(path.join(root, 'src', 'dust.pegjs'), 'utf8'), options);
+
+var namespace = 'parser';
+
+fs.writeFileSync(path.join(root, 'lib', 'parser.js'), "(function(dust){\n\nvar "+namespace+" = "
+  + parser.toSource().replace('this.SyntaxError', ''+namespace+'.SyntaxError') + ";\n\n"
+  + "dust.parse = "+namespace+".parse;\n\n"
+  + "})(typeof exports !== 'undefined' ? exports : getGlobal());"
 );
