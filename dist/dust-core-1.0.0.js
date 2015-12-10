@@ -8,9 +8,9 @@
 
 var dust = {};
 
-function getGlobal(){	
-  return (function(){	
-    return this.dust;	
+function getGlobal(){
+  return (function(){
+    return this.dust;
       }).call(null);
 }
 
@@ -23,7 +23,7 @@ dust.exists = function(name) {
     if (tmpl) {
         return true;
     } else {
-        return false; 
+        return false;
     }
 }
 
@@ -367,9 +367,9 @@ Chunk.prototype.render = function(body, context) {
   return body(this, context);
 };
 
-Chunk.prototype.reference = function(elem, context, auto, filters) {
+  Chunk.prototype.reference = function(elem, context, auto, filters, params) {
   if (typeof elem === "function") {
-    elem = elem(this, context, null, {auto: auto, filters: filters});
+    elem = elem(this, context, null, {auto: auto, filters: filters, params:params});
     if (elem instanceof Chunk) {
       return elem;
     }

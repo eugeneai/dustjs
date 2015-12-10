@@ -60,9 +60,12 @@ parkey "parkey"
   = k:(rdfent / key) {return k;}
 
 parval "parval"
-  = "=" v:(number / rdfent / identifier / inline )
-       {var arr=["key", v]; arr.text=v; return arr;}
+  = "=" v:(number / rdfentval / identifier / inline )
+       {return v;}
   / "" {var arr=["key", true]; arr.text=true; return arr;}
+
+rdfentval "rdfentval"
+  = r:rdfent { var arr=["key", r]; arr.text=r; return arr; };
 
 /*-------------------------------------------------------------------------------------------------------------------------------------
    bodies is defined as matching a opening brace followed by key and closing brace, plus body 0 or more times.
