@@ -1,6 +1,6 @@
-var parse=require("./parser", dust).parse;
+var parse=require("../../lib/parser", dust).parse;
 
-var dust=require("./dust");
+var dust=require("../../lib/dust");
 var util=require("util");
 var beautify=require("js-beautify");
 
