@@ -18,6 +18,15 @@ function getGlobal(){
 
 dust.cache = {};
 
+dust.exists = function(name) {
+    var tmpl = dust.cache[name];
+    if (tmpl) {
+        return true;
+    } else {
+        return false; 
+    }
+}
+
 dust.register = function(name, tmpl) {
   if (!name) return;
   dust.cache[name] = tmpl;
@@ -574,11 +583,12 @@ function isSelect(context) {
 
 function filter(chunk, context, bodies, params, filter) {
   var params = params || {},
-      actual, expected;
+      actual, 
+      expected;
   if (params.key) {
-    actual = context.get(params.key);
+    actual = helpers.tap(params.key, chunk, context);
   } else if (isSelect(context)) {
-    actual = context.current().value;
+    actual = context.current().selectKey;
     if (context.current().isResolved) {
       filter = function() { return false; };
     }
@@ -624,6 +634,7 @@ var helpers = {
   idx: function(chunk, context, bodies) {
     return bodies.block(chunk, context.push(context.stack.index));
   },
+  
   contextDump: function(chunk, context, bodies) {
     _console.log(JSON.stringify(context.stack));
     return chunk;
@@ -661,19 +672,20 @@ var helpers = {
     }
     // no condition
     else {
-      _console.log( "NO condition given in the if helper!" );
+      _console.log( "No condition given in the if helper!" );
     }
     return chunk;
   },
+  
   select: function(chunk, context, bodies, params) {
     if( params && params.key){
-      var key = params.key;
-      key = this.tap(key, chunk, context);
-      return chunk.render(bodies.block, context.push({ isSelect: true, isResolved: false, value: context.get(key) }));
+      // returns given input as output, if the input is a primitive
+      var key = this.tap(params.key, chunk, context);
+      return chunk.render(bodies.block, context.push({ isSelect: true, isResolved: false, selectKey: key }));
     }
     // no key
     else {
-      _console.log( "No key given for the select tag!" );
+      _console.log( "No key given in the select helper!" );
     }
     return chunk;
   },
@@ -699,6 +711,11 @@ var helpers = {
   },
 
   "else": function(chunk, context, bodies, params) {
+    return filter(chunk, context, bodies, params, function(expected, actual) { return true; });
+  },
+
+  // support default as an alternative to else
+  "default": function(chunk, context, bodies, params) {
     return filter(chunk, context, bodies, params, function(expected, actual) { return true; });
   }
 };
