@@ -61,7 +61,8 @@ parkey "parkey"
 
 parval "parval"
   = "=" v:(number / rdfent / identifier / inline )
-       {var arr=["key", v]; arr.text=v; return arr;}
+       {var arr=["key", v]; arr.text=v;
+       return arr;}
   / "" {var arr=["key", true]; arr.text=true; return arr;}
 
 /*-------------------------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /* your connection code */
-var parse=require("./parser", dust).parse;
+//var parser=require("./parser", dust);
 //var compiler=require("./compiler", dust);
 
 var dust=require("./dust");
@@ -10,6 +10,13 @@ var dust=require("./dust");
 
 //parser(dust);
 //compiler(dust);
+
+
+
+var istr=' \n\
+{hello asd qwe | qwe |r| q| r| h | u} \n\
+{#rdf:subj k=n jkhj ha:kl gh:hu=kl:ng } \n\
+{/rdf}\n';
 
 /*
 [ 'body',
@@ -29,19 +36,10 @@ var dust=require("./dust");
   [ 'format', '\n', '' ] ]
 */
 
+//console.log(dust);
 
-var istr=' \n\
-{hello asd qwe=kl | qwe |r| q| r| h | u} \n\
-{#rdf:subj k=n jkhj ha:kl gh:hu=kl:ng } \n\
-{/rdf}\n';
-
-istr='{#hello jk:asd ll=kk dd:qwe=kl:dfg \
-     kl=10.5 /}';
-
-console.log(istr);
-
-var ast=parse(istr);
-console.log(ast);
+//var ast=dust.parse(istr);
+//console.log(ast);
 
 var source=dust.compile(istr);
 console.log(source);

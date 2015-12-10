@@ -1126,9 +1126,9 @@ var parser = (function() {
         peg$c23 = { type: "other", description: "parval" },
         peg$c24 = "=",
         peg$c25 = { type: "literal", value: "=", description: "\"=\"" },
-        peg$c26 = function(v) {return v;},
+        peg$c26 = function(v) {var arr=["key", v]; arr.text=v; return arr;},
         peg$c27 = "",
-        peg$c28 = function() {return ["key", true, {text:true}];},
+        peg$c28 = function() {var arr=["key", true]; arr.text=true; return arr;},
         peg$c29 = { type: "other", description: "bodies" },
         peg$c30 = function(k, v) {return ["param", ["literal", k], v]},
         peg$c31 = function(p) { return ["bodies"].concat(p) },
@@ -1153,8 +1153,8 @@ var parser = (function() {
         peg$c50 = function(p) { var arr = ["path"].concat(p); arr.text = p[1].join('.'); return arr; },
         peg$c51 = function(k) { var arr = ["key", k]; arr.text = k; return arr; },
         peg$c52 = { type: "other", description: "rdfent" },
-        peg$c53 = function(n, i) {return {ns:n, name:i};},
-        peg$c54 = function(r) {return ['rdfent', r];},
+        peg$c53 = function(n, i) {return n+":"+i;},
+        peg$c54 = function(r) {return r;},
         peg$c55 = { type: "other", description: "number" },
         peg$c56 = function(n) { return ['literal', n]; },
         peg$c57 = { type: "other", description: "frac" },
@@ -2388,7 +2388,7 @@ var parser = (function() {
       peg$silentFails++;
       s0 = peg$currPos;
       s1 = peg$currPos;
-      s2 = peg$parseidentifier();
+      s2 = peg$parsekey();
       if (s2 !== peg$FAILED) {
         if (input.charCodeAt(peg$currPos) === 58) {
           s3 = peg$c12;
@@ -2398,7 +2398,7 @@ var parser = (function() {
           if (peg$silentFails === 0) { peg$fail(peg$c13); }
         }
         if (s3 !== peg$FAILED) {
-          s4 = peg$parseidentifier();
+          s4 = peg$parsekey();
           if (s4 !== peg$FAILED) {
             peg$savedPos = s1;
             s2 = peg$c53(s2, s4);
