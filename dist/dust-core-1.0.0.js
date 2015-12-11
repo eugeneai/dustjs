@@ -369,7 +369,7 @@ Chunk.prototype.render = function(body, context) {
 
   Chunk.prototype.reference = function(elem, context, auto, filters, params) {
   if (typeof elem === "function") {
-    elem = elem(this, context, null, {auto: auto, filters: filters, params:params});
+    elem = elem(this, context, null, {auto: auto, filters: filters, params:params, "@@reference":true});
     if (elem instanceof Chunk) {
       return elem;
     }
