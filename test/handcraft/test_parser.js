@@ -13,18 +13,37 @@ var istr='\
 
 //{@view oa:hasTarget class=foaf:Person name=personView /} \n \
 
-//istr='{hello jk:asd ll=kk dd:qwe=kl:dfg kl=10.5 /}';
+istr='<a>{#stream}{#delay}{.}{/delay}{/stream}/}</a>';
 
-//istr='{yhello ll="oa:kk jj:kk" jj:kk=bb:ll ty=10.9 | q|w|e}';
-/*
-    return chk.reference(ctx.get("hello"), ctx, "h"
-      null, null).reference(ctx.get("hello"), ctx, "h", ["a"], null).reference(ctx.get("hello"), ctx, "h", ["c"], {
-      "ab": true
-    })*/
+var test_data=function() {
+  var d = 1;
+  return {
+    stream: function() {
+      return "asynchronous templates for the browser and node.js".split('');
+    },
+    delay: function(chunk, context, bodies) {
+      return chunk.map(function(chunk) {
+        setTimeout(function() {
+          chunk.render(bodies.block, context).end();
+        }, d++ * 15);
+      });
+    }
+  };
+};
+
 console.log(istr);
-
+/*
 var ast=parse(istr);
 console.log(util.inspect(ast, false, null));
+*/
 
-var source=dust.compile(istr);
+var source=dust.compile(istr, "test");
 console.log(beautify(source,{indent_size:2}));
+
+// var fn=dust.compileFn(istr);
+
+/*
+dust.render("test", test_data(), function(err, out) {
+  console.log(out);
+});
+*/
