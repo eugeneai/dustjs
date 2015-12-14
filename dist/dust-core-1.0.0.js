@@ -344,7 +344,8 @@ Chunk.prototype.map = function(callback) {
   this.next = branch;
   this.flushable = true;
   callback(branch);
-  cursor.flushable=true; // =cursor.next.flushable; // Indeed it should be true, as here we can only write strings after .map.
+  // cursor.flushable=true; // =cursor.next.flushable; // Indeed it should be true, as here we can only write strings after .map.
+  cursor.flushable=cursor.next.flushable; // Indeed it should be true, as here we can only write strings after .map.
   return cursor;
 };
 
