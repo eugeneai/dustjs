@@ -1,3 +1,6 @@
+/*! dustjs-linkedin - v2.7.2
+* http://dustjs.com/
+* Copyright (c) 2015 Aleksander Williams; Released under the MIT License */
 (function (root, factory) {
   if (typeof define === 'function' && define.amd && define.amd.dust === true) {
     define('dust.core', [], factory);
@@ -54,7 +57,7 @@
       }
     } else {
       log = EMPTY_FUNC;
-}
+    }
 
     /**
      * Filters messages based on `dust.debugLevel`.
@@ -67,9 +70,6 @@
       type = type || INFO;
       if (loggingLevels[type] >= loggingLevels[dust.debugLevel]) {
         log('[DUST:' + type + ']', message);
-        if (type === ERROR && dust.debugLevel === DEBUG && message instanceof Error && message.stack) {
-          log('[DUST:' + type + ']', message.stack);
-        }
       }
     };
 
@@ -82,39 +82,39 @@
 
   dust.helpers = {};
 
-dust.cache = {};
+  dust.cache = {};
 
-dust.register = function(name, tmpl) {
+  dust.register = function(name, tmpl) {
     if (!name) {
       return;
     }
     tmpl.templateName = name;
     if (dust.config.cache !== false) {
-  dust.cache[name] = tmpl;
+      dust.cache[name] = tmpl;
     }
-};
+  };
 
   dust.render = function(nameOrTemplate, context, callback) {
-  var chunk = new Stub(callback).head;
+    var chunk = new Stub(callback).head;
     try {
       load(nameOrTemplate, chunk, context).end();
     } catch (err) {
       chunk.setError(err);
     }
-};
+  };
 
   dust.stream = function(nameOrTemplate, context) {
     var stream = new Stream(),
         chunk = stream.head;
-  dust.nextTick(function() {
+    dust.nextTick(function() {
       try {
         load(nameOrTemplate, chunk, context).end();
       } catch (err) {
         chunk.setError(err);
       }
-  });
-  return stream;
-};
+    });
+    return stream;
+  };
 
   /**
    * Extracts a template function (body_0) from whatever is passed.
@@ -146,15 +146,15 @@ dust.register = function(name, tmpl) {
   function load(nameOrTemplate, chunk, context) {
     if(!nameOrTemplate) {
       return chunk.setError(new Error('No template or template name provided to render'));
-  }
+    }
 
     var template = getTemplate(nameOrTemplate, dust.config.cache);
 
     if (template) {
       return template(chunk, Context.wrap(context, template.templateName));
-  } else {
-    if (dust.onLoad) {
-      return chunk.map(function(chunk) {
+    } else {
+      if (dust.onLoad) {
+        return chunk.map(function(chunk) {
           // Alias just so it's easier to read that this would always be a name
           var name = nameOrTemplate;
           // Three possible scenarios for a successful callback:
@@ -184,36 +184,36 @@ dust.register = function(name, tmpl) {
           } else {
             dust.onLoad(name, done);
           }
-      });
-    }
+        });
+      }
       return chunk.setError(new Error('Template Not Found: ' + nameOrTemplate));
-  }
+    }
   }
 
   dust.loadSource = function(source) {
     /*jshint evil:true*/
-  return eval(source);
-};
-
-if (Array.isArray) {
-  dust.isArray = Array.isArray;
-} else {
-  dust.isArray = function(arr) {
-      return Object.prototype.toString.call(arr) === '[object Array]';
+    return eval(source);
   };
-}
 
-dust.nextTick = (function() {
-    return function(callback) {
-      setTimeout(callback,0);
+  if (Array.isArray) {
+    dust.isArray = Array.isArray;
+  } else {
+    dust.isArray = function(arr) {
+      return Object.prototype.toString.call(arr) === '[object Array]';
     };
-} )();
+  }
+
+  dust.nextTick = (function() {
+    return function(callback) {
+      setTimeout(callback, 0);
+    };
+  })();
 
   /**
    * Dust has its own rules for what is "empty"-- which is not the same as falsy.
    * Empty arrays, null, and undefined are empty
    */
-dust.isEmpty = function(value) {
+  dust.isEmpty = function(value) {
     if (value === 0) {
       return false;
     }
@@ -221,7 +221,7 @@ dust.isEmpty = function(value) {
       return true;
     }
     return !value;
-};
+  };
 
   dust.isEmptyObject = function(obj) {
     var key;
@@ -248,23 +248,14 @@ dust.isEmpty = function(value) {
   };
 
   /**
-   * Decide somewhat-naively if something is a Thenable.  Matches Promises A+ Spec, section 1.2 “thenable” is an object or function that defines a then method."
+   * Decide somewhat-naively if something is a Thenable.
    * @param elem {*} object to inspect
    * @return {Boolean} is `elem` a Thenable?
    */
   dust.isThenable = function(elem) {
-    return elem &&  /* Beware: `typeof null` is `object` */
-           (typeof elem === 'object' || typeof elem === 'function') &&
+    return elem &&
+           typeof elem === 'object' &&
            typeof elem.then === 'function';
-  };
-
-  /**
-   * Decide if an element is a function but not Thenable; it is prefereable to resolve a thenable function by its `.then` method.
-   * @param elem {*} target of inspection
-   * @return {Boolean} is `elem` a function without a `.then` property?
-   */
-  dust.isNonThenableFunction = function(elem) {
-    return typeof elem === 'function' && !dust.isThenable(elem);
   };
 
   /**
@@ -281,7 +272,7 @@ dust.isEmpty = function(value) {
   // apply the filter chain and return the output string
   dust.filter = function(string, auto, filters, context) {
     var i, len, name, filter;
-  if (filters) {
+    if (filters) {
       for (i = 0, len = filters.length; i < len; i++) {
         name = filters[i];
         if (!name.length) {
@@ -289,26 +280,26 @@ dust.isEmpty = function(value) {
         }
         filter = dust.filters[name];
         if (name === 's') {
-        auto = null;
+          auto = null;
         } else if (typeof filter === 'function') {
           string = filter(string, context);
-      } else {
+        } else {
           dust.log('Invalid filter `' + name + '`', WARN);
+        }
       }
     }
-  }
     // by default always apply the h filter, unless asked to unescape with |s
-  if (auto) {
+    if (auto) {
       string = dust.filters[auto](string, context);
-  }
-  return string;
-};
+    }
+    return string;
+  };
 
-dust.filters = {
-  h: function(value) { return dust.escapeHtml(value); },
-  j: function(value) { return dust.escapeJs(value); },
-  u: encodeURI,
-  uc: encodeURIComponent,
+  dust.filters = {
+    h: function(value) { return dust.escapeHtml(value); },
+    j: function(value) { return dust.escapeJs(value); },
+    u: encodeURI,
+    uc: encodeURIComponent,
     js: function(value) { return dust.escapeJSON(value); },
     jp: function(value) {
       if (!JSON) {dust.log('JSON is undefined; could not parse `' + value + '`', WARN);
@@ -317,26 +308,21 @@ dust.filters = {
         return JSON.parse(value);
       }
     }
-};
+  };
 
   function Context(stack, global, options, blocks, templateName) {
     if(stack !== undefined && !(stack instanceof Stack)) {
       stack = new Stack(stack);
     }
-  this.stack  = stack;
-  this.global = global;
+    this.stack = stack;
+    this.global = global;
     this.options = options;
-  this.blocks = blocks;
+    this.blocks = blocks;
     this.templateName = templateName;
-    this._isContext = true;
-}
+  }
 
   dust.makeBase = dust.context = function(global, options) {
     return new Context(undefined, global, options);
-};
-
-  dust.isContext = function(obj) {
-    return typeof obj === "object" && obj._isContext === true;
   };
 
   /**
@@ -352,12 +338,11 @@ dust.filters = {
   }
 
   Context.wrap = function(context, name) {
-    if (dust.isContext(context)) {
-      context.templateName = name;
-    return context;
-  }
+    if (context instanceof Context) {
+      return context;
+    }
     return new Context(context, {}, {}, null, name);
-};
+  };
 
   /**
    * Public API for getting a value from the context.
@@ -406,16 +391,16 @@ dust.filters = {
     } else {
       if (!cur) {
         // Search up the stack for the first value
-  while(ctx) {
-    if (ctx.isObject) {
+        while (ctx) {
+          if (ctx.isObject) {
             ctxThis = ctx.head;
             value = ctx.head[first];
             if (value !== undefined) {
               break;
-      }
-    }
-    ctx = ctx.tail;
-  }
+            }
+          }
+          ctx = ctx.tail;
+        }
 
         // Try looking in the global context if we haven't found anything yet
         if (value !== undefined) {
@@ -433,18 +418,18 @@ dust.filters = {
         }
       }
 
-  while(ctx && i < len) {
+      while (ctx && i < len) {
         if (dust.isThenable(ctx)) {
           // Bail early by returning a Thenable for the remainder of the search tree
           return ctx.then(getWithResolvedData(this, cur, down.slice(i)));
         }
         ctxThis = ctx;
-    ctx = ctx[down[i]];
-    i++;
-  }
+        ctx = ctx[down[i]];
+        i++;
+      }
     }
 
-    if (dust.isNonThenableFunction(ctx)) {
+    if (typeof ctx === 'function') {
       fn = function() {
         try {
           return ctx.apply(ctxThis, arguments);
@@ -459,19 +444,19 @@ dust.filters = {
       if (ctx === undefined) {
         dust.log('Cannot find reference `{' + down.join('.') + '}` in template `' + this.getTemplateName() + '`', INFO);
       }
-  return ctx;
+      return ctx;
     }
   };
 
   Context.prototype.getPath = function(cur, down) {
     return this._get(cur, down);
-};
+  };
 
-Context.prototype.push = function(head, idx, len) {
+  Context.prototype.push = function(head, idx, len) {
     if(head === undefined) {
       dust.log("Not pushing an undefined variable onto the context", INFO);
       return this;
-  }
+    }
     return this.rebase(new Stack(head, this.stack, idx, len));
   };
 
@@ -479,9 +464,9 @@ Context.prototype.push = function(head, idx, len) {
     var head = this.current();
     this.stack = this.stack && this.stack.tail;
     return head;
-};
+  };
 
-Context.prototype.rebase = function(head) {
+  Context.prototype.rebase = function(head) {
     return new Context(head, this.global, this.options, this.blocks, this.getTemplateName());
   };
 
@@ -489,18 +474,18 @@ Context.prototype.rebase = function(head) {
     var context = this.rebase();
     context.stack = this.stack;
     return context;
-};
+  };
 
-Context.prototype.current = function() {
+  Context.prototype.current = function() {
     return this.stack && this.stack.head;
-};
+  };
 
   Context.prototype.getBlock = function(key) {
     var blocks, len, fn;
 
     if (typeof key === 'function') {
       key = key(new Chunk(), this).data.join('');
-  }
+    }
 
     blocks = this.blocks;
 
@@ -510,31 +495,31 @@ Context.prototype.current = function() {
     }
 
     len = blocks.length;
-  while (len--) {
-    fn = blocks[len][key];
+    while (len--) {
+      fn = blocks[len][key];
       if (fn) {
         return fn;
-  }
+      }
     }
 
     dust.log('Malformed template `' + this.getTemplateName() + '` was missing one or more blocks.');
     return false;
-};
+  };
 
-Context.prototype.shiftBlocks = function(locals) {
+  Context.prototype.shiftBlocks = function(locals) {
     var blocks = this.blocks,
         newBlocks;
 
-  if (locals) {
-    if (!blocks) {
-      newBlocks = [locals];
-    } else {
-      newBlocks = blocks.concat([locals]);
-    }
+    if (locals) {
+      if (!blocks) {
+        newBlocks = [locals];
+      } else {
+        newBlocks = blocks.concat([locals]);
+      }
       return new Context(this.stack, this.global, this.options, newBlocks, this.getTemplateName());
-  }
-  return this;
-};
+    }
+    return this;
+  };
 
   Context.prototype.resolve = function(body) {
     var chunk;
@@ -552,74 +537,75 @@ Context.prototype.shiftBlocks = function(locals) {
   Context.prototype.getTemplateName = function() {
     return this.templateName;
   };
-function Stack(head, tail, idx, len) {
-  this.tail = tail;
+
+  function Stack(head, tail, idx, len) {
+    this.tail = tail;
     this.isObject = head && typeof head === 'object';
-  this.head = head;
-  this.index = idx;
-  this.of = len;
-}
+    this.head = head;
+    this.index = idx;
+    this.of = len;
+  }
 
-function Stub(callback) {
-  this.head = new Chunk(this);
-  this.callback = callback;
-  this.out = '';
-}
+  function Stub(callback) {
+    this.head = new Chunk(this);
+    this.callback = callback;
+    this.out = '';
+  }
 
-Stub.prototype.flush = function() {
-  var chunk = this.head;
+  Stub.prototype.flush = function() {
+    var chunk = this.head;
 
-  while (chunk) {
-    if (chunk.flushable) {
+    while (chunk) {
+      if (chunk.flushable) {
         this.out += chunk.data.join(''); //ie7 perf
-    } else if (chunk.error) {
-      this.callback(chunk.error);
+      } else if (chunk.error) {
+        this.callback(chunk.error);
         dust.log('Rendering failed with error `' + chunk.error + '`', ERROR);
         this.flush = EMPTY_FUNC;
-      return;
-    } else {
-      return;
+        return;
+      } else {
+        return;
+      }
+      chunk = chunk.next;
+      this.head = chunk;
     }
-    chunk = chunk.next;
-    this.head = chunk;
-  }
-  this.callback(null, this.out);
-};
+    this.callback(null, this.out);
+  };
 
   /**
    * Creates an interface sort of like a Streams2 ReadableStream.
    */
-function Stream() {
-  this.head = new Chunk(this);
-}
+  function Stream() {
+    this.head = new Chunk(this);
+  }
 
-Stream.prototype.flush = function() {
-  var chunk = this.head;
+  Stream.prototype.flush = function() {
+    var chunk = this.head;
 
-  while(chunk) {
-    if (chunk.flushable) {
+    while(chunk) {
+      if (chunk.flushable) {
         this.emit('data', chunk.data.join('')); //ie7 perf
-    } else if (chunk.error) {
-      this.emit('error', chunk.error);
+      } else if (chunk.error) {
+        this.emit('error', chunk.error);
         this.emit('end');
         dust.log('Streaming failed with error `' + chunk.error + '`', ERROR);
         this.flush = EMPTY_FUNC;
-      return;
-    } else {
-      return;
+        return;
+      } else {
+        return;
+      }
+      chunk = chunk.next;
+      this.head = chunk;
     }
-    chunk = chunk.next;
-    this.head = chunk;
-  }
-  this.emit('end');
-};
+    this.emit('end');
+  };
 
   /**
    * Executes listeners for `type` by passing data. Note that this is different from a
    * Node stream, which can pass an arbitrary number of arguments
    * @return `true` if event had listeners, `false` otherwise
    */
-Stream.prototype.emit = function(type, data) {
+  Stream.prototype.emit = function(type, data) {
     var events = this.events || {},
         handlers = events[type] || [],
         i, l;
@@ -627,15 +613,16 @@ Stream.prototype.emit = function(type, data) {
     if (!handlers.length) {
       dust.log('Stream broadcasting, but no listeners for `' + type + '`', DEBUG);
       return false;
-  }
+    }
+
     handlers = handlers.slice(0);
     for (i = 0, l = handlers.length; i < l; i++) {
       handlers[i](data);
     }
     return true;
-};
+  };
 
-Stream.prototype.on = function(type, callback) {
+  Stream.prototype.on = function(type, callback) {
     var events = this.events = this.events || {},
         handlers = events[type] = events[type] || [];
 
@@ -643,9 +630,9 @@ Stream.prototype.on = function(type, callback) {
       dust.log('No callback function provided for `' + type + '` event listener', WARN);
     } else {
       handlers.push(callback);
-  }
-  return this;
-};
+    }
+    return this;
+  };
 
   /**
    * Pipes to a WritableStream. Note that backpressure isn't implemented,
@@ -653,7 +640,7 @@ Stream.prototype.on = function(type, callback) {
    * @param stream {WritableStream}
    * @return self
    */
-Stream.prototype.pipe = function(stream) {
+  Stream.prototype.pipe = function(stream) {
     if(typeof stream.write !== 'function' ||
        typeof stream.end !== 'function') {
       dust.log('Incompatible stream passed to `pipe`', WARN);
@@ -688,140 +675,103 @@ Stream.prototype.pipe = function(stream) {
         return;
       }
       try {
-    stream.end();
+        stream.end();
         destEnded = true;
       } catch (err) {
         dust.log(err, ERROR);
       }
-  });
-};
+    });
+  };
 
-function Chunk(root, next, taps) {
-  this.root = root;
-  this.next = next;
+  function Chunk(root, next, taps) {
+    this.root = root;
+    this.next = next;
     this.data = []; //ie7 perf
-  this.flushable = false;
-  this.taps = taps;
-}
-
-Chunk.prototype.write = function(data) {
-  var taps  = this.taps;
-
-  if (taps) {
-    data = taps.go(data);
+    this.flushable = false;
+    this.taps = taps;
   }
+
+  Chunk.prototype.write = function(data) {
+    var taps = this.taps;
+
+    if (taps) {
+      data = taps.go(data);
+    }
     this.data.push(data);
-  return this;
-};
+    return this;
+  };
 
-Chunk.prototype.end = function(data) {
-  if (data) {
-    this.write(data);
-  }
-  this.flushable = true;
-  this.root.flush();
-  return this;
-};
+  Chunk.prototype.end = function(data) {
+    if (data) {
+      this.write(data);
+    }
+    this.flushable = true;
+    this.root.flush();
+    return this;
+  };
 
-  /**
-   * Inserts a new chunk that can be used to asynchronously render or write to it
-   * @param callback {Function} The function that will be called with the new chunk
-   * @returns {Chunk} A copy of this chunk instance in order to further chain function calls on the chunk
-   */
-Chunk.prototype.map = function(callback) {
-  var cursor = new Chunk(this.root, this.next, this.taps),
-      branch = new Chunk(this.root, cursor, this.taps);
+  Chunk.prototype.map = function(callback) {
+    var cursor = new Chunk(this.root, this.next, this.taps),
+        branch = new Chunk(this.root, cursor, this.taps);
 
-  this.next = branch;
-  this.flushable = true;
+    this.next = branch;
+    this.flushable = true;
     try {
-  callback(branch);
+      callback(branch);
     } catch(err) {
       dust.log(err, ERROR);
       branch.setError(err);
     }
-  // cursor.flushable=true; // =cursor.next.flushable; // Indeed it should be true, as here we can only write strings after .map.
-  if (cursor.next) {
-    cursor.flushable=cursor.next.flushable; // Indeed it should be true, as here we can only write strings after .map.
+    return cursor;
   };
-  return cursor;
-};
 
-  /**
-   * Like Chunk#map but additionally resolves a thenable.  If the thenable succeeds the callback is invoked with
-   * a new chunk that can be used to asynchronously render or write to it, otherwise if the thenable is rejected 
-   * then the error body is rendered if available, an error is logged, and the callback is never invoked.
-   * @param {Chunk} The current chunk to insert a new chunk
-   * @param thenable {Thenable} the target thenable to await
-   * @param context {Context} context to use to render the deferred chunk
-   * @param bodies {Object} may optionally contain an "error" for when the thenable is rejected
-   * @param callback {Function} The function that will be called with the new chunk
-   * @returns {Chunk} A copy of this chunk instance in order to further chain function calls on the chunk
-   */
-  function mapThenable(chunk, thenable, context, bodies, callback) {
-    return chunk.map(function(asyncChunk) {
-      thenable.then(function(data) {
-        try {
-          callback(asyncChunk, data);
-        } catch (err) {
-          // handle errors the same way Chunk#map would.  This logic is only here since the thenable defers 
-          // logic such that the try / catch in Chunk#map would not capture it. 
-          dust.log(err, ERROR);
-          asyncChunk.setError(err);
-        }
-      }, function(err) {
-        dust.log('Unhandled promise rejection in `' + context.getTemplateName() + '`', INFO);
-        asyncChunk.renderError(err, context, bodies).end();
-      });
-    });
-  }
-Chunk.prototype.tap = function(tap) {
-  var taps = this.taps;
+  Chunk.prototype.tap = function(tap) {
+    var taps = this.taps;
 
-  if (taps) {
-    this.taps = taps.push(tap);
-  } else {
-    this.taps = new Tap(tap);
-  }
-  return this;
-};
+    if (taps) {
+      this.taps = taps.push(tap);
+    } else {
+      this.taps = new Tap(tap);
+    }
+    return this;
+  };
 
-Chunk.prototype.untap = function() {
-  this.taps = this.taps.tail;
-  return this;
-};
+  Chunk.prototype.untap = function() {
+    this.taps = this.taps.tail;
+    return this;
+  };
 
-Chunk.prototype.render = function(body, context) {
-  return body(this, context);
-};
+  Chunk.prototype.render = function(body, context) {
+    return body(this, context);
+  };
 
-Chunk.prototype.reference = function(elem, context, auto, filters) {
-    if (dust.isNonThenableFunction(elem)) {
-      elem = elem.apply(context.current(), [this, context, null, {auto: auto, filters: filters,params:params, "@@reference":true}]);
-    if (elem instanceof Chunk) {
-      return elem;
+  Chunk.prototype.reference = function(elem, context, auto, filters) {
+    if (typeof elem === 'function') {
+      elem = elem.apply(context.current(), [this, context, null, {auto: auto, filters: filters}]);
+      if (elem instanceof Chunk) {
+        return elem;
       } else {
         return this.reference(elem, context, auto, filters);
+      }
     }
-  }
     if (dust.isThenable(elem)) {
       return this.await(elem, context, null, auto, filters);
     } else if (dust.isStreamable(elem)) {
       return this.stream(elem, context, null, auto, filters);
     } else if (!dust.isEmpty(elem)) {
       return this.write(dust.filter(elem, auto, filters, context));
-  } else {
-    return this;
-  }
-};
+    } else {
+      return this;
+    }
+  };
 
-Chunk.prototype.section = function(elem, context, bodies, params) {
+  Chunk.prototype.section = function(elem, context, bodies, params) {
     var body = bodies.block,
         skip = bodies['else'],
         chunk = this,
         i, len, head;
 
-    if (dust.isNonThenableFunction(elem) && !dust.isTemplateFn(elem)) {
+    if (typeof elem === 'function' && !dust.isTemplateFn(elem)) {
       try {
         elem = elem.apply(context.current(), [this, context, bodies, params]);
       } catch(err) {
@@ -830,10 +780,10 @@ Chunk.prototype.section = function(elem, context, bodies, params) {
       }
       // Functions that return chunks are assumed to have handled the chunk manually.
       // Make that chunk the current one and go to the next method in the chain.
-    if (elem instanceof Chunk) {
-      return elem;
+      if (elem instanceof Chunk) {
+        return elem;
+      }
     }
-  }
 
     if (dust.isEmptyObject(bodies)) {
       // No bodies to render, and we've already invoked any function that was available in
@@ -842,41 +792,41 @@ Chunk.prototype.section = function(elem, context, bodies, params) {
     }
 
     if (!dust.isEmptyObject(params)) {
-    context = context.push(params);
-  }
+      context = context.push(params);
+    }
 
     /*
     Dust's default behavior is to enumerate over the array elem, passing each object in the array to the block.
     When elem resolves to a value or object instead of an array, Dust sets the current context to the value
     and renders the block one time.
     */
-  if (dust.isArray(elem)) {
-    if (body) {
+    if (dust.isArray(elem)) {
+      if (body) {
         len = elem.length;
         if (len > 0) {
           head = context.stack && context.stack.head || {};
           head.$len = len;
           for (i = 0; i < len; i++) {
             head.$idx = i;
-        chunk = body(chunk, context.push(elem[i], i, len));
-      }
+            chunk = body(chunk, context.push(elem[i], i, len));
+          }
           head.$idx = undefined;
           head.$len = undefined;
-      return chunk;
+          return chunk;
         } else if (skip) {
           return skip(this, context);
-    }
+        }
       }
     } else if (dust.isThenable(elem)) {
       return this.await(elem, context, bodies);
     } else if (dust.isStreamable(elem)) {
       return this.stream(elem, context, bodies);
-  } else if (elem === true) {
+    } else if (elem === true) {
      // true is truthy but does not change context
       if (body) {
         return body(this, context);
       }
-  } else if (elem || elem === 0) {
+    } else if (elem || elem === 0) {
        // everything that evaluates to true are truthy ( e.g. Non-empty strings and Empty objects are truthy. )
        // zero is truthy
        // for anonymous functions that did not returns a chunk, truthiness is evaluated based on the return value
@@ -885,61 +835,51 @@ Chunk.prototype.section = function(elem, context, bodies, params) {
       }
      // nonexistent, scalar false value, scalar empty string, null,
      // undefined are all falsy
-  } else if (skip) {
-    return skip(this, context);
-  }
-    dust.log('Section without corresponding key in template `' + context.getTemplateName() + '`', DEBUG);
-  return this;
-};
-
-Chunk.prototype.exists = function(elem, context, bodies) {
-  var body = bodies.block,
-      skip = bodies['else'];
-
-    if (dust.isThenable(elem)) {
-      return mapThenable(this, elem, context, bodies, function(chunk, data) {
-        chunk.exists(data, context, bodies).end();
-      });
+    } else if (skip) {
+      return skip(this, context);
     }
-  if (!dust.isEmpty(elem)) {
+    dust.log('Section without corresponding key in template `' + context.getTemplateName() + '`', DEBUG);
+    return this;
+  };
+
+  Chunk.prototype.exists = function(elem, context, bodies) {
+    var body = bodies.block,
+        skip = bodies['else'];
+
+    if (!dust.isEmpty(elem)) {
       if (body) {
         return body(this, context);
       }
       dust.log('No block for exists check in template `' + context.getTemplateName() + '`', DEBUG);
-  } else if (skip) {
-    return skip(this, context);
-  }
-  return this;
-};
-
-Chunk.prototype.notexists = function(elem, context, bodies) {
-  var body = bodies.block,
-      skip = bodies['else'];
-
-    if (dust.isThenable(elem)) {
-      return mapThenable(this, elem, context, bodies, function(chunk, data) {
-        chunk.notexists(data, context, bodies).end();
-      });
+    } else if (skip) {
+      return skip(this, context);
     }
-  if (dust.isEmpty(elem)) {
+    return this;
+  };
+
+  Chunk.prototype.notexists = function(elem, context, bodies) {
+    var body = bodies.block,
+        skip = bodies['else'];
+
+    if (dust.isEmpty(elem)) {
       if (body) {
         return body(this, context);
       }
       dust.log('No block for not-exists check in template `' + context.getTemplateName() + '`', DEBUG);
-  } else if (skip) {
-    return skip(this, context);
-  }
-  return this;
-};
+    } else if (skip) {
+      return skip(this, context);
+    }
+    return this;
+  };
 
-Chunk.prototype.block = function(elem, context, bodies) {
+  Chunk.prototype.block = function(elem, context, bodies) {
     var body = elem || bodies.block;
 
-  if (body) {
-    return body(this, context);
-  }
-  return this;
-};
+    if (body) {
+      return body(this, context);
+    }
+    return this;
+  };
 
   Chunk.prototype.partial = function(elem, context, partialContext, params) {
     var head;
@@ -948,7 +888,8 @@ Chunk.prototype.block = function(elem, context, bodies) {
       // Compatibility for < 2.7.0 where `partialContext` did not exist
       params = partialContext;
       partialContext = context;
-  }
+    }
+
     if (!dust.isEmptyObject(params)) {
       partialContext = partialContext.clone();
       head = partialContext.pop();
@@ -959,13 +900,15 @@ Chunk.prototype.block = function(elem, context, bodies) {
     if (dust.isTemplateFn(elem)) {
       // The eventual result of evaluating `elem` is a partial name
       // Load the partial after getting its name and end the async chunk
-    return this.capture(elem, context, function(name, chunk) {
+      return this.capture(elem, context, function(name, chunk) {
+        partialContext.templateName = name;
         load(name, chunk, partialContext).end();
-    });
+      });
     } else {
+      partialContext.templateName = elem;
       return load(elem, this, partialContext);
-  }
-};
+    }
+  };
 
   Chunk.prototype.helper = function(name, context, bodies, params, auto) {
     var chunk = this,
@@ -1014,29 +957,25 @@ Chunk.prototype.block = function(elem, context, bodies) {
    * @return {Chunk}
    */
   Chunk.prototype.await = function(thenable, context, bodies, auto, filters) {
-    return mapThenable(this, thenable, context, bodies, function(chunk, data) {
-      if (bodies) {
-        chunk.section(data, context, bodies).end();
-      } else {
-        // Actually a reference. Self-closing sections don't render
-        chunk.reference(data, context, auto, filters).end();
-      }
+    return this.map(function(chunk) {
+      thenable.then(function(data) {
+        if (bodies) {
+          chunk = chunk.section(data, context, bodies);
+        } else {
+          // Actually a reference. Self-closing sections don't render
+          chunk = chunk.reference(data, context, auto, filters);
+        }
+        chunk.end();
+      }, function(err) {
+        var errorBody = bodies && bodies.error;
+        if(errorBody) {
+          chunk.render(errorBody, context.push(err)).end();
+        } else {
+          dust.log('Unhandled promise rejection in `' + context.getTemplateName() + '`', INFO);
+          chunk.end();
+        }
+      });
     });
-  };
-
-  /**
-   * Render an error body if available
-   * @param err {Error} error that occurred
-   * @param context {Context} context to use to render the error
-   * @param bodies {Object} may optionally contain an "error" which will be rendered
-   * @return {Chunk}
-   */
-  Chunk.prototype.renderError = function(err, context, bodies) {
-    var errorBody = bodies && bodies.error;
-    if (errorBody) {
-      return this.render(errorBody, context.push(err));
-    }
-    return this;
   };
 
   /**
@@ -1050,7 +989,8 @@ Chunk.prototype.block = function(elem, context, bodies) {
    * @return {Chunk}
    */
   Chunk.prototype.stream = function(stream, context, bodies, auto, filters) {
-    var body = bodies && bodies.block;
+    var body = bodies && bodies.block,
+        errorBody = bodies && bodies.error;
     return this.map(function(chunk) {
       var ended = false;
       stream
@@ -1072,8 +1012,11 @@ Chunk.prototype.block = function(elem, context, bodies) {
           if(ended) {
             return;
           }
-          chunk.renderError(err, context, bodies);
-          dust.log('Unhandled stream error in `' + context.getTemplateName() + '`', INFO);
+          if(errorBody) {
+            chunk.render(errorBody, context.push(err));
+          } else {
+            dust.log('Unhandled stream error in `' + context.getTemplateName() + '`', INFO);
+          }
           if(!ended) {
             ended = true;
             chunk.end();
@@ -1086,26 +1029,26 @@ Chunk.prototype.block = function(elem, context, bodies) {
           }
         });
     });
-};
+  };
 
-Chunk.prototype.capture = function(body, context, callback) {
-  return this.map(function(chunk) {
-    var stub = new Stub(function(err, out) {
-      if (err) {
-        chunk.setError(err);
-      } else {
-        callback(out, chunk);
-      }
+  Chunk.prototype.capture = function(body, context, callback) {
+    return this.map(function(chunk) {
+      var stub = new Stub(function(err, out) {
+        if (err) {
+          chunk.setError(err);
+        } else {
+          callback(out, chunk);
+        }
+      });
+      body(stub.head, context).end();
     });
-    body(stub.head, context).end();
-  });
-};
+  };
 
-Chunk.prototype.setError = function(err) {
-  this.error = err;
-  this.root.flush();
-  return this;
-};
+  Chunk.prototype.setError = function(err) {
+    this.error = err;
+    this.root.flush();
+    return this;
+  };
 
   // Chunk aliases
   for(var f in Chunk.prototype) {
@@ -1113,72 +1056,73 @@ Chunk.prototype.setError = function(err) {
       Chunk.prototype[dust._aliases[f]] = Chunk.prototype[f];
     }
   }
-function Tap(head, tail) {
-  this.head = head;
-  this.tail = tail;
-}
 
-Tap.prototype.push = function(tap) {
-  return new Tap(tap, this);
-};
-
-Tap.prototype.go = function(value) {
-  var tap = this;
-
-  while(tap) {
-    value = tap.head(value);
-    tap = tap.tail;
+  function Tap(head, tail) {
+    this.head = head;
+    this.tail = tail;
   }
-  return value;
-};
+
+  Tap.prototype.push = function(tap) {
+    return new Tap(tap, this);
+  };
+
+  Tap.prototype.go = function(value) {
+    var tap = this;
+
+    while(tap) {
+      value = tap.head(value);
+      tap = tap.tail;
+    }
+    return value;
+  };
 
   var HCHARS = /[&<>"']/,
-    AMP    = /&/g,
-    LT     = /</g,
-    GT     = />/g,
-    QUOT   = /\"/g,
-    SQUOT  = /\'/g;
+      AMP    = /&/g,
+      LT     = /</g,
+      GT     = />/g,
+      QUOT   = /\"/g,
+      SQUOT  = /\'/g;
 
-dust.escapeHtml = function(s) {
+  dust.escapeHtml = function(s) {
     if (typeof s === "string" || (s && typeof s.toString === "function")) {
       if (typeof s !== "string") {
         s = s.toString();
       }
-    if (!HCHARS.test(s)) {
-      return s;
+      if (!HCHARS.test(s)) {
+        return s;
+      }
+      return s.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(QUOT,'&quot;').replace(SQUOT, '&#39;');
     }
-    return s.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(QUOT,'&quot;').replace(SQUOT, '&#39;');
-  }
-  return s;
-};
+    return s;
+  };
 
-var BS = /\\/g,
+  var BS = /\\/g,
       FS = /\//g,
-    CR = /\r/g,
-    LS = /\u2028/g,
-    PS = /\u2029/g,
-    NL = /\n/g,
-    LF = /\f/g,
-    SQ = /'/g,
-    DQ = /"/g,
-    TB = /\t/g;
+      CR = /\r/g,
+      LS = /\u2028/g,
+      PS = /\u2029/g,
+      NL = /\n/g,
+      LF = /\f/g,
+      SQ = /'/g,
+      DQ = /"/g,
+      TB = /\t/g;
 
-dust.escapeJs = function(s) {
+  dust.escapeJs = function(s) {
     if (typeof s === 'string') {
-    return s
-      .replace(BS, '\\\\')
+      return s
+        .replace(BS, '\\\\')
         .replace(FS, '\\/')
-      .replace(DQ, '\\"')
+        .replace(DQ, '\\"')
         .replace(SQ, '\\\'')
-      .replace(CR, '\\r')
-      .replace(LS, '\\u2028')
-      .replace(PS, '\\u2029')
-      .replace(NL, '\\n')
-      .replace(LF, '\\f')
+        .replace(CR, '\\r')
+        .replace(LS, '\\u2028')
+        .replace(PS, '\\u2029')
+        .replace(NL, '\\n')
+        .replace(LF, '\\f')
         .replace(TB, '\\t');
-  }
-  return s;
-};
+    }
+    return s;
+  };
 
   dust.escapeJSON = function(o) {
     if (!JSON) {
@@ -1195,3 +1139,14 @@ dust.escapeJs = function(s) {
   return dust;
 
 }));
+
+if (typeof define === "function" && define.amd && define.amd.dust === true) {
+    define(["require", "dust.core"], function(require, dust) {
+        dust.onLoad = function(name, cb) {
+            require([name], function() {
+                cb();
+            });
+        };
+        return dust;
+    });
+}

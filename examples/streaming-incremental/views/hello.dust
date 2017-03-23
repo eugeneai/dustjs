@@ -1,0 +1,28 @@
+{#wait name="one" delay=1}
+  <p>Hello world! I'm delayed one second.</p>
+{/wait}
+
+{#wait name="two" delay=2}
+  <p>When Dust streams a template with many async blocks, it flushes them to the browser in-order, as fast as it can.</p>
+{/wait}
+
+{#wait name="three" delay=5}
+  <p>This block has a longer delay (5 seconds), so the blocks that finish below it will all be flushed as soon as it's ready.</p>
+{/wait}
+
+<ul>
+  {#wait name="fourA" delay=1}<li>1</li>{/wait}
+  {#wait name="fourB" delay=1}<li>2</li>{/wait}
+  {#wait name="fourC" delay=1}<li>3</li>{/wait}
+</ul>
+
+{#wait name="five" delay=10}
+  <p>This one takes a long time to render, but it's at the bottom of the page so you get the rest of the page first.</p>
+{/wait}
+
+{#wait name="six" delay=0}
+  <blockquote>
+    <p>This block had no delay, so it was rendered first (check the console).
+    <p>However, it couldn't be sent to the browser until everything above it completed.</p>
+  </blockquote>
+{/wait}

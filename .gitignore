@@ -3,3 +3,10 @@ bower_components
 node_modules
 .coverage_data
 cover_html
+*.DS_Store
+.grunt
+index.html
+tmp
+examples/*/views/**/*.js
+examples/*/lib/*
+!examples/*/lib/main.js
