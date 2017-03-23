@@ -150,6 +150,9 @@ identifier "identifier"
     return arr;
   }
 
+rdfent "rdfent"
+  = r:(n:key ":" i:key {return n+":"+i;}) {return r;}
+
 number "number"
   = n:(float / integer) { return ['literal', n]; }
 
